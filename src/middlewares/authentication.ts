@@ -2,6 +2,7 @@ import express from "express";
 import pkg from "lodash";
 
 import { getUserBySessionToken } from "../services/users";
+import { getPostById } from "../services/posts";
 
 const { merge, get } = pkg;
 
@@ -14,13 +15,13 @@ export const isAuthenticated = async (
     const sessionToken = req.cookies["AUTH"];
 
     if (!sessionToken) {
-      return res.sendStatus(403);
+      return res.status(403).json("Please login first").end();
     }
 
     const existingUser = await getUserBySessionToken(sessionToken);
 
     if (!existingUser) {
-      return res.sendStatus(403);
+      return res.status(403).json("Invalid session token. Please login.").end();
     }
 
     merge(req, { identity: existingUser });
@@ -28,11 +29,11 @@ export const isAuthenticated = async (
     return next();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).json(error.message).end();
   }
 };
 
-export const isOwner = async (
+export const isAccountOwner = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
@@ -41,17 +42,41 @@ export const isOwner = async (
     const { id } = req.params;
     const currentUserId = get(req, "identity._id") as string;
 
-    if (!currentUserId) {
-      return res.sendStatus(400);
-    }
-
     if (currentUserId.toString() !== id) {
-      return res.sendStatus(403);
+      return res
+        .status(403)
+        .json("Insufficient permissions to complete this action")
+        .end();
     }
 
     next();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).json(error.message).end();
+  }
+};
+
+export const isPostOwner = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const currentUserId = get(req, "identity._id") as string;
+
+    const post = await getPostById(id);
+
+    if (currentUserId.toString() !== post.userId._id.toString()) {
+      return res
+        .status(403)
+        .json("Insufficient permissions to complete this action")
+        .end();
+    }
+
+    next();
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error.message).end();
   }
 };

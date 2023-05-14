@@ -36,20 +36,21 @@ export const login = async (req: express.Request, res: express.Response) => {
     res.cookie("AUTH", user.authentication.sessionToken, {
       domain: "localhost",
       path: "/",
+      expires: new Date(Date.now() + 900000),
     });
 
     return res.status(200).json(user).end();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).json(error.message).end();
   }
 };
 
 export const register = async (req: express.Request, res: express.Response) => {
   try {
-    const { password, username, name } = req.body;
+    const { password, username, name, apartment } = req.body;
 
-    if (!password || !username || !name) {
+    if (!password || !username || !name || !apartment) {
       return res.sendStatus(400);
     }
 
@@ -63,6 +64,7 @@ export const register = async (req: express.Request, res: express.Response) => {
     const user = await createUser({
       username,
       name,
+      apartment,
       authentication: {
         salt,
         password: authentication(salt, password),
@@ -72,6 +74,6 @@ export const register = async (req: express.Request, res: express.Response) => {
     return res.status(200).json(user).end();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.status(400).json(error.message).end();
   }
 };

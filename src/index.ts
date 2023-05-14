@@ -26,9 +26,9 @@ app.use("/api/", router());
 const server = http.createServer(app);
 const port = process.env.PORT || 8080;
 
-mongoose.connect(process.env.MONGO_URL);
 // hide warning message
 mongoose.set("strictQuery", false);
+mongoose.connect(process.env.MONGO_URL);
 
 mongoose.connection.once("connected", () => {
   cConsole.status("Database Connected");

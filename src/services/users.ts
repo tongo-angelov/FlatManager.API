@@ -1,6 +1,5 @@
 import { UserModel } from "../models/user";
 
-// User Actions
 export const getUsers = () => UserModel.find();
 export const getUserByUsername = (username: string) =>
   UserModel.findOne({ username });
