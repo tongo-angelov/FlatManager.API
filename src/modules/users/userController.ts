@@ -50,6 +50,7 @@ export const updateUser = async (
     if (username) user.username = username;
     if (name) user.name = name;
     if (apartment) user.apartment = apartment;
+    // TODO : remove direct db calls from controller
     await user.save();
 
     return ServerResponse.success(res, "User updated", user);

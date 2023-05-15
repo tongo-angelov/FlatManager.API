@@ -34,7 +34,7 @@ export const createPost = async (
     const { title, body } = req.body;
 
     if (!title || !body) {
-      return res.status(400).json("Invalid data provided").end();
+      return ServerResponse.warning(res, "Invalid data provided");
     }
 
     const currentUserId = get(req, "identity._id") as string;
@@ -47,7 +47,7 @@ export const createPost = async (
       body,
     });
 
-    return res.status(200).json(post).end();
+    return ServerResponse.success(res, "Post created", post);
   } catch (error) {
     cConsole.error(error);
     return ServerResponse.error(res, error);
@@ -63,7 +63,7 @@ export const deletePost = async (
 
     const deletedPost = await deletePostById(id);
 
-    return res.json(deletedPost);
+    return ServerResponse.success(res, "Post deleted", deletedPost);
   } catch (error) {
     cConsole.error(error);
     return ServerResponse.error(res, error);
@@ -87,7 +87,7 @@ export const updatePost = async (
     if (body) post.body = body;
     await post.save();
 
-    return res.status(200).json(post).end();
+    return ServerResponse.success(res, "Post updated", post);
   } catch (error) {
     cConsole.error(error);
     return ServerResponse.error(res, error);

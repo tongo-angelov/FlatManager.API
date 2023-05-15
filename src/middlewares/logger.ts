@@ -27,6 +27,6 @@ export const logger = (
   next: express.NextFunction
 ) => {
   logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, "reqLog.log");
-  cConsole.error(`${req.method} ${req.path}`);
+  cConsole.status(`${req.method} ${req.path}`);
   next();
 };
