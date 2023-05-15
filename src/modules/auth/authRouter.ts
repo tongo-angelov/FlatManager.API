@@ -1,14 +1,10 @@
 import express from "express";
 
-import {
-  changePassword,
-  login,
-  register,
-} from "../controllers/authentication.js";
+import { changePassword, login, register } from "./authController.js";
 import {
   isAccountOwner,
   isAuthenticated,
-} from "../middlewares/authentication.js";
+} from "../../middlewares/authentication.js";
 
 export default (router: express.Router) => {
   router.patch("/auth/:id", isAuthenticated, isAccountOwner, changePassword);

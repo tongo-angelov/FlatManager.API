@@ -1,10 +1,10 @@
 import express from "express";
 
-import { getAllUsers, deleteUser, updateUser } from "../controllers/users.js";
+import { getAllUsers, deleteUser, updateUser } from "./userController.js";
 import {
   isAuthenticated,
   isAccountOwner,
-} from "../middlewares/authentication.js";
+} from "../../middlewares/authentication.js";
 
 export default (router: express.Router) => {
   router.get("/users", isAuthenticated, getAllUsers);

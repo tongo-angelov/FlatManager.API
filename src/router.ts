@@ -1,8 +1,8 @@
 import express from "express";
 
-import authentication from "./authentication.js";
-import users from "./users.js";
-import posts from "./posts.js";
+import authentication from "./modules/auth/authRouter.js";
+import users from "./modules/users/userRouter.js";
+import posts from "./modules/posts/postRouter.js";
 
 const router = express.Router();
 

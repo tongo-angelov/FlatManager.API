@@ -7,7 +7,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import "dotenv/config";
 
-import router from "./router/index.js";
+import router from "./router.js";
 import cConsole from "./utils/console.js";
 import { logEvents, logger } from "./middlewares/logger.js";
 

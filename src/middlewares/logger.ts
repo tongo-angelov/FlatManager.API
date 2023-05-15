@@ -3,6 +3,7 @@ import express from "express";
 import { format } from "date-fns";
 import fs from "fs";
 import path from "path";
+import cConsole from "../utils/console";
 
 export const logEvents = async (message: string, logFileName: string) => {
   const dateTime = format(new Date(), "yyyyMMdd\tHH:mm:ss");
@@ -16,7 +17,7 @@ export const logEvents = async (message: string, logFileName: string) => {
       logItem
     );
   } catch (error) {
-    console.log(error);
+    cConsole.error(error);
   }
 };
 
@@ -26,6 +27,6 @@ export const logger = (
   next: express.NextFunction
 ) => {
   logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, "reqLog.log");
-  console.log(`${req.method} ${req.path}`);
+  cConsole.error(`${req.method} ${req.path}`);
   next();
 };

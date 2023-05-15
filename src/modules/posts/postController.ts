@@ -4,11 +4,11 @@ import {
   getPosts,
   createNewPost,
   deletePostById,
-} from "../services/posts";
+} from "./postRepository";
 import pkg from "lodash";
-import { getUserById } from "../services/users";
-import ServerResponse from "../utils/response";
-import cConsole from "../utils/console";
+import { getUserById } from "../users/userRepository";
+import ServerResponse from "../../utils/response";
+import cConsole from "../../utils/console";
 
 const { get } = pkg;
 

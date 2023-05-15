@@ -5,8 +5,11 @@ import {
   deletePost,
   getAllPosts,
   updatePost,
-} from "../controllers/posts.js";
-import { isAuthenticated, isPostOwner } from "../middlewares/authentication.js";
+} from "./postController.js";
+import {
+  isAuthenticated,
+  isPostOwner,
+} from "../../middlewares/authentication.js";
 
 export default (router: express.Router) => {
   router

@@ -1,13 +1,13 @@
 import express from "express";
 
-import { authentication, random } from "../utils/encryption.js";
+import { authentication, random } from "../../utils/encryption.js";
 import {
   createUser,
   getUserById,
   getUserByUsername,
-} from "../services/users.js";
-import ServerResponse from "../utils/response.js";
-import cConsole from "../utils/console.js";
+} from "../users/userRepository.js";
+import ServerResponse from "../../utils/response.js";
+import cConsole from "../../utils/console.js";
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {

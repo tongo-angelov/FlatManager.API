@@ -1,7 +1,7 @@
 import express from "express";
-import { deleteUserById, getUserById, getUsers } from "../services/users";
-import ServerResponse from "../utils/response";
-import cConsole from "../utils/console";
+import { deleteUserById, getUserById, getUsers } from "./userRepository";
+import ServerResponse from "../../utils/response";
+import cConsole from "../../utils/console";
 
 export const getAllUsers = async (
   req: express.Request,

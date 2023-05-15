@@ -1,4 +1,4 @@
-import { PostModel } from "../models/post";
+import { PostModel } from "./postModel";
 
 export const getPosts = () => PostModel.find();
 // export const getPostsByUsername = (username: string) =>

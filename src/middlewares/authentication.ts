@@ -1,8 +1,10 @@
 import express from "express";
 import pkg from "lodash";
 
-import { getUserBySessionToken } from "../services/users";
-import { getPostById } from "../services/posts";
+import { getUserBySessionToken } from "../modules/users/userRepository";
+import { getPostById } from "../modules/posts/postRepository";
+import ServerResponse from "../utils/response";
+import cConsole from "../utils/console";
 
 const { merge, get } = pkg;
 
@@ -15,21 +17,24 @@ export const isAuthenticated = async (
     const sessionToken = req.cookies["AUTH"];
 
     if (!sessionToken) {
-      return res.status(403).json("Please login first").end();
+      return ServerResponse.unauthenticated(res, "Please login first");
     }
 
     const existingUser = await getUserBySessionToken(sessionToken);
 
     if (!existingUser) {
-      return res.status(403).json("Invalid session token. Please login.").end();
+      return ServerResponse.unauthenticated(
+        res,
+        "Invalid session token. Please login."
+      );
     }
 
     merge(req, { identity: existingUser });
 
     return next();
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error);
   }
 };
 
@@ -43,16 +48,16 @@ export const isAccountOwner = async (
     const currentUserId = get(req, "identity._id") as string;
 
     if (currentUserId.toString() !== id) {
-      return res
-        .status(403)
-        .json("Insufficient permissions to complete this action")
-        .end();
+      return ServerResponse.unauthenticated(
+        res,
+        "Insufficient permissions to complete this action"
+      );
     }
 
     next();
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error);
   }
 };
 
@@ -68,15 +73,15 @@ export const isPostOwner = async (
     const post = await getPostById(id);
 
     if (currentUserId.toString() !== post.userId._id.toString()) {
-      return res
-        .status(403)
-        .json("Insufficient permissions to complete this action")
-        .end();
+      return ServerResponse.unauthenticated(
+        res,
+        "Insufficient permissions to complete this action"
+      );
     }
 
     next();
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error);
   }
 };
