@@ -7,6 +7,8 @@ import {
 } from "../services/posts";
 import pkg from "lodash";
 import { getUserById } from "../services/users";
+import ServerResponse from "../utils/response";
+import cConsole from "../utils/console";
 
 const { get } = pkg;
 
@@ -17,10 +19,10 @@ export const getAllPosts = async (
   try {
     const posts = await getPosts();
 
-    return res.status(200).json(posts);
+    return ServerResponse.success(res, "Posts found", posts);
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error);
   }
 };
 
@@ -32,7 +34,7 @@ export const createPost = async (
     const { title, body } = req.body;
 
     if (!title || !body) {
-      return res.sendStatus(400);
+      return res.status(400).json("Invalid data provided").end();
     }
 
     const currentUserId = get(req, "identity._id") as string;
@@ -47,8 +49,8 @@ export const createPost = async (
 
     return res.status(200).json(post).end();
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error);
   }
 };
 
@@ -63,8 +65,8 @@ export const deletePost = async (
 
     return res.json(deletedPost);
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error);
   }
 };
 
@@ -76,19 +78,18 @@ export const updatePost = async (
     const { id } = req.params;
     const { title, body } = req.body;
 
-    if (!title || !body) {
-      return res.sendStatus(400);
+    if (!title && !body) {
+      return ServerResponse.warning(res, "Invalid data provided");
     }
 
     const post = await getPostById(id);
-
-    post.title = title;
-    post.body = body;
+    if (title) post.title = title;
+    if (body) post.body = body;
     await post.save();
 
     return res.status(200).json(post).end();
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error);
   }
 };

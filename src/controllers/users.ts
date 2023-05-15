@@ -1,5 +1,7 @@
 import express from "express";
 import { deleteUserById, getUserById, getUsers } from "../services/users";
+import ServerResponse from "../utils/response";
+import cConsole from "../utils/console";
 
 export const getAllUsers = async (
   req: express.Request,
@@ -8,10 +10,10 @@ export const getAllUsers = async (
   try {
     const users = await getUsers();
 
-    return res.status(200).json(users);
+    return ServerResponse.success(res, "Users found", users);
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error.message);
   }
 };
 
@@ -24,10 +26,10 @@ export const deleteUser = async (
 
     const deletedUser = await deleteUserById(id);
 
-    return res.json(deletedUser);
+    return ServerResponse.success(res, "User deleted", deletedUser);
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error.message);
   }
 };
 
@@ -37,20 +39,22 @@ export const updateUser = async (
 ) => {
   try {
     const { id } = req.params;
-    const { username } = req.body;
+    const { username, apartment, name } = req.body;
 
-    if (!username) {
-      return res.sendStatus(400);
+    if (!username && !apartment && !name) {
+      return ServerResponse.warning(res, "Invalid data provided");
     }
 
     const user = await getUserById(id);
 
-    user.username = username;
+    if (username) user.username = username;
+    if (name) user.name = name;
+    if (apartment) user.apartment = apartment;
     await user.save();
 
-    return res.status(200).json(user).end();
+    return ServerResponse.success(res, "User updated", user);
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error.message);
   }
 };

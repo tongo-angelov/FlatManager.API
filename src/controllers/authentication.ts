@@ -1,14 +1,20 @@
 import express from "express";
 
 import { authentication, random } from "../utils/encryption.js";
-import { createUser, getUserByUsername } from "../services/users.js";
+import {
+  createUser,
+  getUserById,
+  getUserByUsername,
+} from "../services/users.js";
+import ServerResponse from "../utils/response.js";
+import cConsole from "../utils/console.js";
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.sendStatus(400);
+      return ServerResponse.warning(res, "Invalid data provided");
     }
 
     const user = await getUserByUsername(username).select(
@@ -16,13 +22,16 @@ export const login = async (req: express.Request, res: express.Response) => {
     );
 
     if (!user) {
-      return res.sendStatus(400);
+      return ServerResponse.warning(res, "Username or password is incorect");
     }
 
     const expectedHash = authentication(user.authentication.salt, password);
 
     if (user.authentication.password != expectedHash) {
-      return res.sendStatus(403);
+      return ServerResponse.unauthenticated(
+        res,
+        "Username or password is incorect"
+      );
     }
 
     const salt = random();
@@ -39,10 +48,14 @@ export const login = async (req: express.Request, res: express.Response) => {
       expires: new Date(Date.now() + 900000),
     });
 
-    return res.status(200).json(user).end();
+    return ServerResponse.success(res, "User logged in", {
+      username: user.username,
+      name: user.name,
+      apartment: user.apartment,
+    });
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error.message);
   }
 };
 
@@ -51,13 +64,13 @@ export const register = async (req: express.Request, res: express.Response) => {
     const { password, username, name, apartment } = req.body;
 
     if (!password || !username || !name || !apartment) {
-      return res.sendStatus(400);
+      return ServerResponse.warning(res, "Invalid data provided");
     }
 
     const existingUser = await getUserByUsername(username);
 
     if (existingUser) {
-      return res.sendStatus(400);
+      return ServerResponse.warning(res, "Username already exists");
     }
 
     const salt = random();
@@ -71,9 +84,45 @@ export const register = async (req: express.Request, res: express.Response) => {
       },
     });
 
-    return res.status(200).json(user).end();
+    return ServerResponse.success(res, "User created", {
+      username: user.username,
+      name: user.name,
+      apartment: user.apartment,
+    });
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message).end();
+    cConsole.error(error);
+    return ServerResponse.error(res, error.message);
+  }
+};
+
+export const changePassword = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return ServerResponse.warning(res, "Invalid data provided");
+    }
+
+    const existingUser = await getUserById(id);
+
+    if (!existingUser) {
+      return ServerResponse.warning(res, "User does not exists");
+    }
+
+    existingUser.authentication.password = authentication(
+      existingUser.authentication.salt,
+      password
+    );
+
+    await existingUser.save();
+
+    return ServerResponse.success(res, "Password updated", []);
+  } catch (error) {
+    cConsole.error(error);
+    return ServerResponse.error(res, error.message);
   }
 };
