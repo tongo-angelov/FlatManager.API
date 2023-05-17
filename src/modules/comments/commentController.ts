@@ -1,5 +1,5 @@
 import express from "express";
-import { createNewComment } from "./commentRepository";
+import { addComment } from "./commentRepository";
 import pkg from "lodash";
 import { getUserById } from "../users/userRepository";
 import ServerResponse from "../../utils/response";
@@ -15,9 +15,9 @@ export const createComment = async (
   try {
     const { postId } = req.params;
 
-    const { body } = req.body;
+    const { comment } = req.body;
 
-    if (!body) {
+    if (!comment) {
       return ServerResponse.warning(res, "Invalid data provided");
     }
 
@@ -26,15 +26,13 @@ export const createComment = async (
     const user = await getUserById(currentUserId);
     const post = await getPostById(postId);
 
-    const comment = await createNewComment({
+    const newComment = await addComment(postId, {
       userId: currentUserId,
       userName: user.name,
-      postId,
-      postTitle: post.title,
-      body,
+      comment,
     });
 
-    return ServerResponse.success(res, "Comment created", comment);
+    return ServerResponse.success(res, "Comment created", newComment);
   } catch (error) {
     cConsole.error(error);
     return ServerResponse.error(res, error);

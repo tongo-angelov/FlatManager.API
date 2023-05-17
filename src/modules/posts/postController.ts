@@ -1,30 +1,11 @@
 import express from "express";
-import {
-  getPostById,
-  getPosts,
-  createNewPost,
-  deletePostById,
-} from "./postRepository";
+import { getPostById, getPosts, createNewPost } from "./postRepository";
 import pkg from "lodash";
 import { getUserById } from "../users/userRepository";
 import ServerResponse from "../../utils/response";
 import cConsole from "../../utils/console";
 
 const { get } = pkg;
-
-export const getAllPosts = async (
-  req: express.Request,
-  res: express.Response
-) => {
-  try {
-    const posts = await getPosts();
-
-    return ServerResponse.success(res, "Posts found", posts);
-  } catch (error) {
-    cConsole.error(error);
-    return ServerResponse.error(res, error);
-  }
-};
 
 export const createPost = async (
   req: express.Request,
@@ -41,8 +22,10 @@ export const createPost = async (
     const user = await getUserById(currentUserId);
 
     const post = await createNewPost({
-      userId: currentUserId,
-      userName: user.name,
+      author: {
+        userId: currentUserId,
+        userName: user.name,
+      },
       title,
       body,
     });
@@ -54,16 +37,14 @@ export const createPost = async (
   }
 };
 
-export const deletePost = async (
+export const getAllPosts = async (
   req: express.Request,
   res: express.Response
 ) => {
   try {
-    const { id } = req.params;
+    const posts = await getPosts();
 
-    const deletedPost = await deletePostById(id);
-
-    return ServerResponse.success(res, "Post deleted", deletedPost);
+    return ServerResponse.success(res, "Posts found", posts);
   } catch (error) {
     cConsole.error(error);
     return ServerResponse.error(res, error);
@@ -85,6 +66,7 @@ export const updatePost = async (
     const post = await getPostById(id);
     if (title) post.title = title;
     if (body) post.body = body;
+    // TODO : remove direct db call from controller
     await post.save();
 
     return ServerResponse.success(res, "Post updated", post);

@@ -1,20 +1,12 @@
-import { addComment as addPostComment } from "../posts/postRepository";
-import { addComment as addUserComment } from "../users/userRepository";
-import { CommentModel } from "./commentModel";
+import { PostComment, PostModel } from "../posts/postModel";
 
-export const createNewComment = async (values: Record<string, any>) => {
-  const comment = new CommentModel(values);
-  await addPostComment(comment.postId.toString(), {
-    userId: comment.userId,
-    userName: comment.userName,
-    commentId: comment._id,
-    comment: comment.body,
+export const addComment = async (id: string, values: PostComment) => {
+  const post = await PostModel.findById(id);
+  post.comments.push({
+    userId: values.userId,
+    userName: values.userName,
+    comment: values.comment,
   });
-  await addUserComment(comment.postId.toString(), {
-    postId: comment.postId,
-    postTitle: comment.postTitle,
-    commentId: comment._id,
-    comment: comment.body,
-  });
-  return comment;
+  await post.save();
+  return post;
 };

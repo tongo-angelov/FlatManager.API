@@ -1,5 +1,5 @@
 import express from "express";
-import { deleteUserById, getUserById, getUsers } from "./userRepository";
+import { getUsers, updateUserById } from "./userRepository";
 import ServerResponse from "../../utils/response";
 import cConsole from "../../utils/console";
 
@@ -11,22 +11,6 @@ export const getAllUsers = async (
     const users = await getUsers();
 
     return ServerResponse.success(res, "Users found", users);
-  } catch (error) {
-    cConsole.error(error);
-    return ServerResponse.error(res, error.message);
-  }
-};
-
-export const deleteUser = async (
-  req: express.Request,
-  res: express.Response
-) => {
-  try {
-    const { id } = req.params;
-
-    const deletedUser = await deleteUserById(id);
-
-    return ServerResponse.success(res, "User deleted", deletedUser);
   } catch (error) {
     cConsole.error(error);
     return ServerResponse.error(res, error.message);
@@ -45,15 +29,13 @@ export const updateUser = async (
       return ServerResponse.warning(res, "Invalid data provided");
     }
 
-    const user = await getUserById(id);
+    const updatedUser = await updateUserById(id, {
+      username,
+      name,
+      apartment,
+    });
 
-    if (username) user.username = username;
-    if (name) user.name = name;
-    if (apartment) user.apartment = apartment;
-    // TODO : remove direct db calls from controller
-    await user.save();
-
-    return ServerResponse.success(res, "User updated", user);
+    return ServerResponse.success(res, "User updated", updatedUser);
   } catch (error) {
     cConsole.error(error);
     return ServerResponse.error(res, error.message);

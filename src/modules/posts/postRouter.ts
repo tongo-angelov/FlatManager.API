@@ -1,11 +1,6 @@
 import express from "express";
 
-import {
-  createPost,
-  deletePost,
-  getAllPosts,
-  updatePost,
-} from "./postController.js";
+import { createPost, getAllPosts, updatePost } from "./postController.js";
 import {
   isAuthenticated,
   isPostOwner,
@@ -13,9 +8,7 @@ import {
 
 export default (router: express.Router) => {
   router
+    .post("/posts", isAuthenticated, createPost)
     .get("/posts", isAuthenticated, getAllPosts)
-    .post("/posts", isAuthenticated, createPost);
-  router
-    .patch("/posts/:id", isAuthenticated, isPostOwner, updatePost)
-    .delete("/posts/:id", isAuthenticated, isPostOwner, deletePost);
+    .patch("/posts/:id", isAuthenticated, isPostOwner, updatePost);
 };

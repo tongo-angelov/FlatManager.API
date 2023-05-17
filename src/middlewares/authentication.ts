@@ -72,7 +72,7 @@ export const isPostOwner = async (
 
     const post = await getPostById(id);
 
-    if (currentUserId.toString() !== post.userId._id.toString()) {
+    if (currentUserId.toString() !== post.author.userId._id.toString()) {
       return ServerResponse.unauthenticated(
         res,
         "Insufficient permissions to complete this action"
