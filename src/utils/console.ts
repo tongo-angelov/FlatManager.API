@@ -3,7 +3,8 @@ export default class cConsole {
     console.log("\x1b[42m%s\x1b[0m", data);
   };
   static status = (data: any) => {
-    console.log("\x1b[44m%s\x1b[0m", data);
+    console.log(data);
+    // console.log("\x1b[44m%s\x1b[0m", data);
   };
   static warning = (data: any) => {
     console.log("\x1b[43m%s\x1b[0m", data);

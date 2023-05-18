@@ -1,0 +1,32 @@
+version: "3.1"
+
+services:
+  api:
+    # set image name to the one you built
+    image: tongo/api:0.1.0
+    container_name: api
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - 27017:27017
+    restart: unless-stopped
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017
+    depends_on:
+      - mongo
