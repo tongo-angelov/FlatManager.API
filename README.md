@@ -15,7 +15,8 @@ Backend for the FlatManager app
 # TODO Checklist
 
 - [x] Add README
-- [] Add TODOs
+- [ ] Add TODOs
+- [ ] Add API documentation
 
 <br />
 
@@ -31,7 +32,7 @@ npm i
 
 ### Then create .env file in the root directory
 
-Add MONGO_URL env variable with the address, username and password of your MongoDB, either from Atlas or local installation
+Rename `.env.example` to `.env` and modify the MONGO_URL env variable with the address, username and password of your MongoDB, either from Atlas or local installation
 
 ```shell
 MONGO_URL = mongodb+srv://<user>:<password>@cluster0.whokvny.mongodb.net
@@ -68,5 +69,11 @@ sudo docker build -t tongo/api:0.1.0 .
 ### And last, lets run the image
 
 Use the example ['docker-compose'](/docker-compose.yaml) file. The example compose includes both mongodb and mongo-express, to view and modify the db.
-<br />
+If you use Atlas you can set your connection string in environment
+
+```shell
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+```
+
 _If you set other image tag than `tongo/api:0.1.0`, you will need to change it in the `docker-compose.yaml` file_
