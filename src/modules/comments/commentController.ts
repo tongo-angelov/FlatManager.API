@@ -1,10 +1,10 @@
 import express from "express";
-import { addComment } from "./commentRepository";
 import pkg from "lodash";
+
+import { addComment } from "./commentRepository";
 import { getUserById } from "../users/userRepository";
 import ServerResponse from "../../utils/response";
 import cConsole from "../../utils/console";
-import { getPostById } from "../posts/postRepository";
 
 const { get } = pkg;
 
@@ -24,7 +24,6 @@ export const createComment = async (
     const currentUserId = get(req, "identity._id") as string;
 
     const user = await getUserById(currentUserId);
-    const post = await getPostById(postId);
 
     const newComment = await addComment(postId, {
       userId: currentUserId,

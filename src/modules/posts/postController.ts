@@ -51,6 +51,18 @@ export const getAllPosts = async (
   }
 };
 
+export const getPost = async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+    const post = await getPostById(id);
+
+    return ServerResponse.success(res, "Post found", post);
+  } catch (error) {
+    cConsole.error(error);
+    return ServerResponse.error(res, error);
+  }
+};
+
 export const updatePost = async (
   req: express.Request,
   res: express.Response

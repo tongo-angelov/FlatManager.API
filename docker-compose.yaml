@@ -19,6 +19,8 @@ services:
     ports:
       - 27017:27017
     restart: unless-stopped
+    volumes:
+      - mongodb:/data/db
 
   mongo-express:
     image: mongo-express
@@ -30,3 +32,6 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://mongo:27017
     depends_on:
       - mongo
+
+volumes:
+  mongodb:

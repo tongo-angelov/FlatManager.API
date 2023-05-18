@@ -7,6 +7,7 @@ export const addComment = async (id: string, values: PostComment) => {
     userName: values.userName,
     comment: values.comment,
   });
+  post.commentsCount += 1;
   await post.save();
   return post;
 };

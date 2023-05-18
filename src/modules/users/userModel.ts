@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema(
       sessionToken: { type: String, select: false },
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 export const UserModel = mongoose.model("User", UserSchema);

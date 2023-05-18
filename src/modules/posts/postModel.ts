@@ -15,6 +15,9 @@ const PostSchema = new mongoose.Schema(
     },
     title: { type: String, required: true },
     body: { type: String, required: true },
+    price: Number,
+    collected: Number,
+    dueDate: String,
     comments: [
       {
         userId: {
@@ -26,8 +29,17 @@ const PostSchema = new mongoose.Schema(
         comment: { type: String, required: true },
       },
     ],
+    commentsCount: { type: Number, default: 0 },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User",
+      },
+    ],
+    likesCount: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 export const PostModel = mongoose.model("Post", PostSchema);

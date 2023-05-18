@@ -11,7 +11,7 @@ import cConsole from "../../utils/console.js";
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, rememberme } = req.body;
 
     if (!username || !password) {
       return ServerResponse.warning(res, "Invalid data provided");
@@ -45,7 +45,7 @@ export const login = async (req: express.Request, res: express.Response) => {
     res.cookie("AUTH", user.authentication.sessionToken, {
       domain: "localhost",
       path: "/",
-      expires: new Date(Date.now() + 900000),
+      expires: !rememberme && new Date(Date.now() + 900000),
     });
 
     return ServerResponse.success(res, "User logged in", {
