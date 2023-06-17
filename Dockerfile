@@ -1,4 +1,11 @@
-FROM node:18
+FROM node:18 AS builder
+
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build
+
+FROM node:18 AS final
 
 ARG MONGO_URL
 ENV MONGO_URL=${MONGO_URL}
@@ -6,13 +13,12 @@ ENV MONGO_URL=${MONGO_URL}
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
-WORKDIR /usr/src/app
+WORKDIR /app
+COPY --from=builder ./app/dist ./dist
 
-COPY package*.json /usr/src/app/
+COPY package*.json ./
 RUN npm ci --omit=dev
-
-COPY /dist /usr/src/app
 
 EXPOSE 8080
 
-CMD ["node","index.js"]
+CMD ["node","dist/index.js"]
